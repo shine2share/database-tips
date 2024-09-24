@@ -18,3 +18,19 @@ begin
 end;
 
 call generate_sample_data(10000000);
+
+-> too slow
+
+using connect by level
+
+insert into test_data (test_num, test_text, test_datetime)
+select
+   floor(DBMS_RANDOM.value() * 1000000),
+   DBMS_RANDOM.string('a', 20),
+   to_date('2024-09-24', 'YYYY-MM-DD') + (DBMS_RANDOM.value() * 365 * 20)
+   from dual
+connect by level <= 10000000;
+
+-> maybe throw not enough memory when run on local
+but if run on linux server this error may not throw,
+solution to run on local: using docker to adjust memory allocation.
