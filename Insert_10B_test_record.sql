@@ -34,3 +34,25 @@ connect by level <= 10000000;
 -> maybe throw not enough memory when run on local
 but if run on linux server this error may not throw,
 solution to run on local: using docker to adjust memory allocation.
+
+-----------------------------
+
+postgresql
+using store procedure
+create or replace procedure generate_sample_data(
+    IN number_of_rows INTEGER
+)
+language plpgsql
+as $$
+begin
+    for loop_increment in 1 .. number_of_rows loop
+    insert into test_data(test_num, test_text, test_datetime)
+      select
+      floor(random() * 1000000),
+      substring(md5(random()::text), 1, 20),
+      '2024-09-20'::date + trunc(random() * 365 * 20)::int;
+    end loop;
+end;$$
+
+
+using generate_series() build in function
